@@ -1,0 +1,159 @@
+<html>
+
+<head>
+
+<style>
+
+h5{
+
+    font-family: sans-serif; 
+
+}
+/* presentation of the input fields*/
+
+input {
+
+/*absolute fixed position*/
+
+position: absolute;
+
+left: 240px;
+
+/*family of fonts*/
+
+font-family: sans-serif;
+
+/*character size*/
+
+font-size:12px;
+
+width:160px;
+
+}
+
+/* presentation of label*/
+
+label {
+
+/* left position*/
+
+left: 4px;
+
+/*family of fonts*/
+
+font-family: sans-serif;
+
+/* character size*/
+
+font-size:12px;
+
+}
+
+/* button presentation*/
+
+input [type=button]
+
+{
+
+position: absolute;
+
+/* left position*/
+
+top:130px;
+
+left:10px;
+
+font-size:12px;
+
+}
+
+/* end of styles*/
+
+</style>
+
+<! start of script>
+<script language="JavaScript">
+
+    function calculation(MF)
+    
+    {
+    
+    /* I retrieve the value of the invoice date in a variable*/
+    
+    var d1=document.MF.dateI.value;
+    
+    /* I transform the string d1 into date*/
+    
+    var Td1=new Date(d1);
+    
+    /* I calculate the date in milliseconds*/
+    
+    md1=Td1.getTime();
+    
+    /* I retrieve the value of the settlement date*/
+    
+    var d2=document.MF.dateS.value;
+    
+    /* I transform the string d2 into date*/
+    
+    var Td2=new Date(d2);
+    
+    /* I calculate the date in milliseconds*/
+    
+    md2=Td2.getTime();
+    
+    /* I make the difference in milliseconds*/
+    
+    var diff=md2-md1;
+    
+    /* I retransform milliseconds into number of days*/
+    
+    var result=diff/(1000 * 3600 * 24);
+    
+    /* I place the result in the 3rd zone*/
+    
+    document.MF.nbr.value=result;
+    
+    }
+    
+    /* end of script*/
+    
+    </script>
+    
+    <! end of header>
+    
+    </head>
+    
+    <! beginning of the body of the page>
+    
+    <body>
+    
+    <h5>Number of days between two dates</h5>
+    
+    <!start of form definition>
+    
+    <form name="MF">
+    
+    <label> Enter invoice date:<label>
+    
+    <input type="date" name="dateI"><br><br>
+    
+    <!the expression br means : you go to the line>
+    
+    <label>Enter payment date:</label>
+    
+    <input type="date" name="dateS"><br><br>
+    
+    <label> Number of days between the two dates:</label>
+    
+    <input type="text" name="nbr"><br><br>
+    
+    <! if I click on the button, then I trigger the calculation function>
+    
+    <input type="button" value="Calculate" OnClick="calculation(MF)">
+    
+    </form>
+    
+    </body>
+    
+    </html>

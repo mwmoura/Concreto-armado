@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flexão Normal Simples</title>
+    <style>
+
+        h4 {
+            font-family: Arial;
+        }
+        h3 {
+            font-family: Arial;
+        }
+        input {
+            width: 100px;
+        }
+        div#res {
+            margin-top: 20px;
+            font-family: Arial;
+        }
+        div#res1 {
+            margin-top: 20px;
+            font-family: Arial;
+        }
+
+    </style>
+</head>
+<body>
+    <h3>Dimensionamento de seções retangulares à flexão normal simples</h3>
+    <h4>Resistência característica à compressão do concreto em MPa = <input type="number" name="fck" id="fck"></h4>
+
+    <h4>Tensão de escoamento característica do aço em MPa = <input type="number" name="fyk" id="fyk"></h4>
+
+    <h4>Módulo de elasticidade do aço em GPa = <input type="number" name="es" id="es"></h4>
+
+    <h4>Coeficientes parciais de segurança para o concreto = <input type="number" name="gamac" id="gamac"></h4>
+
+    <h4>Coeficientes parciais de segurança para o aço = <input type="number" name="gamas" id="gamas"></h4>
+
+    <h4>Coeficientes parciais de segurança para o momento fletor = <input type="number" name="gamaf" id="gamaf"></h4>
+
+    <h4>Coeficiente beta de redistribuição de momentos = <input type="number" name="bduct" id="bduct"></h4>
+
+    <h4>Largura da seção transversal em cm = <input type="number" name="b" id="b"></h4>
+
+    <h4>Altura da seção transversal em cm = <input type="number" name="h" id="h"></h4>
+
+    <h4>Altura útil da seção transversal em cm = <input type="number" name="d" id="d"></h4>
+    
+    <h4>Parâmetro d' em cm = <input type="number" name="dl" id="dl"></h4>
+    
+    <h4>Momento fletor de serviço em kN.m = <input type="number" name="amk" id="amk"></h4>
+    
+    <h4> </h4>
+
+    <input type="button" value="Calcular" onclick="calcular()">
+
+    <div id = 'res'>Qual a área de aço??</div>
+    <div id = 'res1'> </div>
+
+    <script>
+        function calcular() {
+            var fck = document.getElementById('fck')
+            var fyk = document.getElementById('fyk')
+            var es = document.getElementById('es')
+            var gamac = document.getElementById('gamac')
+            var gamas = document.getElementById('gamas')
+            var gamaf = document.getElementById('gamaf')
+            var bduct = document.getElementById('bduct')
+            var b = document.getElementById('b')
+            var h = document.getElementById('h')
+            var d = document.getElementById('d')
+            var dl = document.getElementById('dl')
+            var amk = document.getElementById('amk')
+            var fck1 = Number(fck.value)
+            var fyk1 = Number(fyk.value)
+            var es1 = Number(es.value)
+            var gamac1 = Number(gamac.value)
+            var gamas1 = Number(gamas.value)
+            var gamaf1 = Number(gamaf.value)
+            var bduct1 = Number(bduct.value)
+            var b1 = Number(b.value)
+            var h1 = Number(h.value)
+            var d1 = Number(d.value)
+            var dl1 = Number(dl.value)
+            var amk1 = Number(amk.value)
+            if (fck1 <= 50) {
+                var alamb = 0.8
+                var alfac = 0.85
+                var eu = 3.5
+                var qlim = 0.8 * bduct1 - 0.35
+            } else {
+                var alamb = 0.8 - (fck1 - 50) / 400
+                var alfac = 0.85 * (1 - (fck1 - 50) / 200)
+                var eu = 2.6 + 35 * ((90 - fck1) / 100) ** 4
+                var qlim = 0.8 * bduct1 - 0.45
+            }
+            amk = 100 * amk1
+            fck = fck1 / 10
+            fyk = fyk1 / 10
+            es = 100 * es1
+
+            fcd = fck / gamac1
+            tcd = alfac * fcd
+            fyd = fyk / gamas1
+            amd = gamaf1 * amk
+
+            delta = dl1 / d1
+
+            amilim = alamb * qlim * (1 - 0.5 * alamb * qlim)
+
+            ami = amd / (b1 * d1 * d1 * tcd)
+
+            if (ami <= amilim) {
+                var qsi = (1 - Math.sqrt(1 - 2 * ami)) / alamb
+                aas = alamb * qsi * b1 * d1 * tcd / fyd
+                asl = 0
+            } else {
+                qsia = eu / (eu + 10)
+                if (qlim < qsia) {
+                    var test = 1
+                    var aviso = "Aumentar a seção transversal!"
+                }
+                if (qlim <= delta) {
+                    var test = 1
+                    var aviso = "Aumentar a seção transversal!"
+                }
+                esl = eu * (qlim - delta) / qlim
+                esl = esl / 1000
+                ess = Math.abs(esl)
+                eyd = fyd / es
+                if (ess < eyd) {
+                    tsl = es * ess
+                } else {
+                    tsl = fyd
+                }
+                if (esl < 0) {
+                    tsl = -tsl
+                }
+                asl = (ami - amilim) * b1 * d1 * tcd / ((1 - delta) * tsl)
+                aas = (alamb * qlim + (ami - amilim) / (1 - delta)) * b1 * d1 * tcd / fyd
+            }
+
+            a = 2 / 3
+            fck = 10 * fck
+            fyd = 10 * fyd
+
+            if (fck <= 50) {
+                romin = 0.078 * (fck ** a) / fyd
+            } else {
+                romin = 0.5512 * Math.log10(1 + 0.11 * fck) / fyd
+            }
+            if (romin < 0.0015) {
+                romin = 0.0015
+            }
+
+            asmin = romin * b1 * h1
+
+            if (aas < asmin) {
+                aas = asmin
+            }
+
+
+            if (test == 1) {
+                res.innerHTML = `<strong>${aviso}</strong>`
+            } else {
+                res.innerHTML = `<strong>A área de aço tracionada é ${aas.toFixed(2)} cm².</strong>`
+                res1.innerHTML = `<strong>A área de aço comprimida é ${asl.toFixed(2)} cm².</strong>`
+            }
+
+        }
+    </script>
+
+</body>
+</html>
